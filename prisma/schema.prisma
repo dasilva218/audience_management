@@ -13,25 +13,94 @@ datasource db {
   provider = "postgresql"
 }
 
+// --- Enumérations ---
+
+enum RequestStatus {
+  PENDING // En attente de traitement
+  PROCESSING // En cours d'examen
+  SCHEDULED // Audience programmée
+  REJECTED // Demande refusée
+  COMPLETED // Audience effectuée
+}
+
+enum UserRole {
+  AGENT
+  ADMIN
+}
+
+// --- Modèles de l'Application ---
+
+model Ministry {
+  id          String   @id @default(cuid())
+  name        String   @unique // ex: "Ministère de l'Économie Numérique"
+  slug        String   @unique // ex: "ministere-economie-numerique"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users    User[] // Les agents/admins rattachés au ministère
+  requests AudienceRequest[] // Les demandes reçues par ce ministère
+}
+
+model AudienceRequest {
+  id           String @id @default(cuid())
+  trackingCode String @unique // Code généré type "AUD-2024-XXXX"
+
+  // Informations du Demandeur (Public)
+  fullName String
+  email    String
+  phone    String
+  subject  String  @db.Text
+  message  String? @db.Text
+
+  // Documents (Stockage des URLs/Chemins)
+  idCardUrl     String // URL du PDF/Image de la pièce d'identité
+  requestPdfUrl String // URL du PDF de la demande officielle
+
+  // Suivi interne
+  status      RequestStatus @default(PENDING)
+  adminNote   String?       @db.Text // Note interne des agents
+  scheduledAt DateTime? // Date et heure de l'audience si acceptée
+
+  // Relations
+  ministryId String
+  ministry   Ministry @relation(fields: [ministryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([trackingCode])
+  @@index([ministryId])
+}
+
+// --- Modèles Better Auth (Adaptés) ---
+
 model User {
-  id            String    @id
+  id            String   @id @default(cuid())
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Champ personnalisé : Rôle et appartenance
+  role       UserRole  @default(AGENT) // admin, agent
+  ministryId String?
+  ministry   Ministry? @relation(fields: [ministryId], references: [id])
+
+  sessions Session[]
+  accounts Account[]
 
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(cuid())
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -39,13 +108,11 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
-  @@index([userId])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
   userId                String
@@ -60,18 +127,16 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@index([userId])
   @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 
-  @@index([identifier])
   @@map("verification")
 }

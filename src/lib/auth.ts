@@ -15,9 +15,14 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: ["AGENT", "ADMIN"],
-        input: true,
+        input: false,
         default: "AGENT" // Valeur par défaut si non spécifié
-      }
+      },
+      // ministryId: {
+      //   type: "string",
+      //   input:true,
+
+      // }
     }
   },
   session: {

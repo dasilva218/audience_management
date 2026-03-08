@@ -1,13 +1,13 @@
 'use client';
 import { SignIn } from "@/lib/action";
 import { LoginFormData, loginFormSchema } from "@/schema";
-// import { SignIn } from "@/action/users";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+// import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-// import { toast } from "sonner";
+
 
 export default function useLoginForm() {
   // États locaux pour gérer l'interface utilisateur
@@ -32,10 +32,12 @@ export default function useLoginForm() {
     setIsLoading(true);
     try {
       // const { message, success } = await SignUp(result as RegisterFormData)
-      const { message, success } = await SignIn(result as LoginFormData);
+      const { message, success, callbackURL } = await SignIn(result as LoginFormData);
       if (!success) throw new Error(message);
       toast.success(message);
-      router.refresh()
+      if (callbackURL) {
+        router.push(callbackURL)
+      }
     } catch (e) {
       // Gestion des erreurs
       toast.error((e as Error).message);

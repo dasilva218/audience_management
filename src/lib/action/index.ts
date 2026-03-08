@@ -7,18 +7,17 @@ import { redirect } from "next/navigation"
 
 export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
   try {
-    const res = await auth.api.signInEmail(
+    const { url } = await auth.api.signInEmail(
       {
         headers: await headers(),
         body: {
           email: params.email,
           password: params.password,
-          callbackURL: `${process.env.BETTER_AUTH_URL}/dashboard`
+          callbackURL: `${process.env.BETTER_AUTH_URL}/admin`
         }
       }
     )
-    console.log(res);
-    return { success: true, message: "Connexion réussie" }
+    return { success: true, message: "Connexion réussie", callbackURL: url }
   } catch (error) {
     const e = error as Error
     console.log(e);
@@ -34,7 +33,7 @@ export const SignUp = async (params: RegisterFormData): Promise<AuthPromise> => 
           name: params.email.split("@")[0], // Utiliser l'email pour générer un nom par défaut
           email: params.email,
           password: params.password,
-          role: params.role,
+          // role: params.role,
           callbackURL: `${process.env.NEXT_PUBLIC_BASE_URL}/login`
         }
       }
@@ -60,4 +59,5 @@ export const SignOut = async () => {
 export type AuthPromise = {
   success: boolean
   message: string
+  callbackURL?: string
 }

@@ -1,12 +1,12 @@
 'use client'
-import { Eye, EyeOffIcon, Lock, LogInIcon, Shield } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Field, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Controller } from "react-hook-form";
-import { cn } from "@/lib/utils";
 import useLoginForm from "@/hooks/loginForm";
+import { cn } from "@/lib/utils";
+import { Eye, EyeOffIcon, Lock, LogInIcon, Shield } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
 
 export default function Login() {
   return (
@@ -61,10 +61,13 @@ function LoginForm({
         <Controller
           name="email"
           control={form.control}
-          render={({ field }) => (
-            <Field>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input {...field} id="email" type="email" placeholder="m@example.com" required />
+              <Input {...field} aria-invalid={fieldState.invalid} id="email" type="email" placeholder="m@example.com" required />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
             </Field>
           )}
         />
@@ -72,8 +75,8 @@ function LoginForm({
         <Controller
           name="password"
           control={form.control}
-          render={({ field }) => (
-            <Field {...field} >
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
               <div className="flex items-center">
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <a
@@ -92,6 +95,9 @@ function LoginForm({
                   autoComplete="current-password"
                   {...field}
                 />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}

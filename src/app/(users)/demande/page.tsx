@@ -1,3 +1,5 @@
+import AudienceForm from "../components/AudienceForm";
+
 export default function pageDemande() {
   return (
     <div className="min-h-screen bg-background">
@@ -13,7 +15,7 @@ export default function pageDemande() {
               Aucun compte n{"'"}est requis.
             </p>
           </div>
-          {/* <AudienceForm /> */}
+          <AudienceForm />
         </div>
       </main>
     </div>

@@ -255,41 +255,61 @@ export default function AudienceForm() {
                             Documents
                         </h3>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="identityDoc">
-                                    Piece d{"'"}identite <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative">
-                                    <Input
-                                        id="identityDoc"
-                                        type="file"
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
-                                    />
-                                </div>
-                                <p className="text-xs text-muted-foreground">PDF, JPEG ou PNG - Max 5 Mo</p>
-                                {serverErrors.identityDoc && (
-                                    <p className="text-sm text-destructive">{serverErrors.identityDoc[0]}</p>
+
+                            <Controller
+                                name="identityDoc"
+                                control={""}
+                                render={({ field, fieldState }) => (
+                                    <div className="flex flex-col gap-1.5">
+                                        <Field>
+                                            <FieldLabel>
+                                                Piece d{"'"}identite <span className="text-destructive">*</span>
+                                            </FieldLabel>
+
+                                            <div className="relative">
+                                                <Input
+                                                    id="identityDoc"
+                                                    type="file"
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
+                                                />
+                                            </div>
+                                        </Field>
+                                        <p className="text-xs text-muted-foreground">PDF, JPEG ou PNG - Max 5 Mo</p>
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </div>
+
                                 )}
-                            </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="requestLetter">
-                                    Lettre de demande <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative">
-                                    <Input
-                                        id="requestLetter"
-                                        type="file"
-                                        accept=".pdf"
-                                        className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
-                                    />
-                                </div>
-                                <p className="text-xs text-muted-foreground">PDF uniquement - Max 5 Mo</p>
-                                {serverErrors.requestLetter && (
-                                    <p className="text-sm text-destructive">{serverErrors.requestLetter[0]}</p>
+                            />
+
+                            <Controller
+                                name="equestLetter"
+                                control={ }
+                                render={({ field, fieldState }) => (
+                                    <div className="flex flex-col gap-1.5">
+                                        <Field>
+                                            <FieldLabel>
+                                                Lettre de demande <span className="text-destructive">*</span>
+                                            </FieldLabel>
+                                            <div className="relative">
+                                                <Input
+                                                    id="requestLetter"
+                                                    type="file"
+                                                    accept=".pdf"
+                                                    className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
+                                                />
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">PDF uniquement - Max 5 Mo</p>
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    </div>
                                 )}
-                            </div>
+                            />
+
                         </div>
                     </div>
 

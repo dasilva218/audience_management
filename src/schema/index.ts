@@ -42,5 +42,74 @@ export const RegisterSchema = z.object({
 // path: ["passwordConfirmation"], // Cible l'erreur sur ce champ
 // });
 
+/*------ schema Demande audience -----*/
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ACCEPTED_PDF_TYPE = "application/pdf";
+
+const fileSchema = z.instanceof(File).superRefine((file, ctx) => {
+  if (file.size > MAX_FILE_SIZE) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Le fichier ne peut exceder 5MB",
+    });
+  }
+});
+
+const imageSchema = fileSchema.superRefine((file, ctx) => {
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Format accepte: JPG, PNG ou WEBP",
+    });
+  }
+});
+
+const pdfSchema = fileSchema.superRefine((file, ctx) => {
+  if (file.type !== ACCEPTED_PDF_TYPE) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Format accepte: PDF uniquement",
+    });
+  }
+});
+
+export const audienceRequestSchema = z.object({
+  // identityDoc: z
+  //   .union([imageSchema, pdfSchema]),
+  // requestLetter: pdfSchema,
+  firstName: z
+    .string()
+    .min(2, "Le prenom doit contenir au moins 2 caracteres")
+    .max(50, "Le prenom ne peut exceder 50 caracteres"),
+  lastName: z
+    .string()
+    .min(2, "Le nom doit contenir au moins 2 caracteres")
+    .max(50, "Le nom ne peut exceder 50 caracteres"),
+  email: z.email("Adresse email invalide"),
+  phone: z
+    .string()
+    .regex(
+      /^\+241\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/,
+      "Format: +241 XX XX XX XX"
+    ),
+  nationalId: z
+    .string()
+    .min(5, "Numero de piece d'identite requis"),
+  ministryId: z
+    .string()
+    .min(1, "Veuillez selectionner un ministere"),
+  subject: z
+    .string()
+    .min(10, "L'objet doit contenir au moins 10 caracteres")
+    .max(150, "L'objet ne peut exceder 150 caracteres"),
+  description: z
+    .string()
+    .min(30, "La description doit contenir au moins 30 caracteres")
+    .max(2000, "La description ne peut exceder 2000 caracteres"),
+})
+
 export type RegisterFormData = z.infer<typeof RegisterSchema>
 export type LoginFormData = z.infer<typeof loginFormSchema>
+export type AudienceRequestFormData = z.infer<typeof audienceRequestSchema>

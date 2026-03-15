@@ -7,3 +7,9 @@ export type StatCardProps = {
   color: string
   bg: string
 };
+
+export interface Ministry {
+  id: string
+  name: string
+  slug: string
+}

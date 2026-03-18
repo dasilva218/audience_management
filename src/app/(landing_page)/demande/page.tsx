@@ -1,10 +1,10 @@
-import { PublicHeader } from "@/components/landing/PublicHeader";
+
 import AudienceForm from "../components/AudienceForm";
 
 export default function pageDemande() {
   return (
     <div className="min-h-screen bg-background">
-      <PublicHeader />
+      {/* <PublicHeader /> */}
       <main className="py-8 px-4">
         <div className="mx-auto max-w-2xl">
           <div className="mb-8 text-center">

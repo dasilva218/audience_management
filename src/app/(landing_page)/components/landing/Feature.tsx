@@ -1,5 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Clock1, Search, Shield, Users } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
+
 
 export default function Feature() {
   return (

@@ -1,5 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, FileText, Shield } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
+
 
 export default function Work() {
   return (

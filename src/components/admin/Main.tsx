@@ -1,5 +1,5 @@
 'use client'
-import { StatCardProps } from "@/lib/types";
+import { StatCardProps } from "@/lib/types/index_type";
 import { BarChart3, CheckCircle, Clock, FileCheck, FileText } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";

@@ -44,7 +44,6 @@ function TopBar() {
     </div>
   )
 }
-
 // composant main nav
 function MainNav() {
 
@@ -93,7 +92,7 @@ function MainNav() {
     </div>
   )
 }
-
+// composant nav mobile
 function MobileNav() {
 
   const { pathname, setMobileOpen } = usePublicHeaderContext()

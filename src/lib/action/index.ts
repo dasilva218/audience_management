@@ -57,10 +57,11 @@ export const SignOut = async () => {
 }
 
 export const SubmitAudience = async () => {
-  
+
 }
 
 export async function submitAudienceRequest(formData: FormData) {
+  
   const rawData = {
     firstName: formData.get("firstName") as string,
     lastName: formData.get("lastName") as string,
@@ -71,7 +72,8 @@ export async function submitAudienceRequest(formData: FormData) {
     subject: formData.get("subject") as string,
     description: formData.get("description") as string,
   }
-
+  console.log(rawData);
+  return
   const result = audienceRequestSchema.safeParse(rawData)
   if (!result.success) {
     return {

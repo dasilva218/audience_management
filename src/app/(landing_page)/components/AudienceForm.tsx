@@ -6,27 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import useDemandeForm from "@/hooks/demandeForm";
-import { Ministry } from "@/lib/types/index_type";
+import { MINISTRIES } from "@/lib/data/index_data";
 import { CheckCircle2, FileTextIcon, Loader2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 
 export default function AudienceForm() {
 
-    const MINISTRIES: Ministry[] = [
-        { id: "1", name: "Ministere de l'Interieur", slug: "interieur" },
-        { id: "2", name: "Ministere de l'Economie et des Finances", slug: "economie-finances" },
-        { id: "3", name: "Ministere de la Sante", slug: "sante" },
-        { id: "4", name: "Ministere de l'Education Nationale", slug: "education" },
-        { id: "5", name: "Ministere de la Justice", slug: "justice" },
-        { id: "6", name: "Ministere des Affaires Etrangeres", slug: "affaires-etrangeres" },
-        { id: "7", name: "Ministere des Travaux Publics", slug: "travaux-publics" },
-        { id: "8", name: "Ministere de l'Agriculture", slug: "agriculture" },
-        { id: "9", name: "Ministere du Petrole et du Gaz", slug: "petrole-gaz" },
-        { id: "10", name: "Ministere de la Communication", slug: "communication" },
-    ]
-
-    const { form, isPending, trackingCode, setTrackingCode } = useDemandeForm()
-
+    const { form, isPending, trackingCode, setTrackingCode, onSubmit } = useDemandeForm()
 
     if (trackingCode) {
         return (
@@ -74,7 +60,7 @@ export default function AudienceForm() {
             </CardHeader>
 
             <CardContent>
-                <form className="flex flex-col gap-6" >
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6" >
                     {/* Identity Section */}
                     <div className="flex flex-col gap-4">
                         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -289,42 +275,62 @@ export default function AudienceForm() {
                             Documents
                         </h3>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="identityDoc">
-                                    Piece d{"'"}identite <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative">
-                                    <Input
-                                        id="identityDoc"
-                                        type="file"
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
-                                    />
-                                </div>
-                                <p className="text-xs text-muted-foreground">PDF, JPEG ou PNG - Max 5 Mo</p>
-                                {/* {serverErrors.identityDoc && (
+                            {/* section piéces d'identité */}
+                            <Controller
+                                name="identityDoc"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor="identityDoc">
+                                            Piece d{"'"}identite <span className="text-destructive">*</span>
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                id="identityDoc"
+                                                type="file"
+                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
+                                                onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                                                onBlur={field.onBlur}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">PDF, JPEG ou PNG - Max 5 Mo</p>
+                                        {/* {serverErrors.identityDoc && (
                                     <p className="text-sm text-destructive">{serverErrors.identityDoc[0]}</p>
                                 )} */}
-                            </div>
+                                    </div>
+                                )}
+                            />
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="requestLetter">
-                                    Lettre de demande <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative">
-                                    <Input
-                                        id="requestLetter"
-                                        type="file"
-                                        accept=".pdf"
-                                        className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
-                                    />
-                                </div>
-                                <p className="text-xs text-muted-foreground">PDF uniquement - Max 5 Mo</p>
-                                {/* {serverErrors.requestLetter && (
+
+
+                            {/* section lettre de demande */}
+                            <Controller
+                                name="requestLetter"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor="requestLetter">
+                                            Lettre de demande <span className="text-destructive">*</span>
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                id="requestLetter"
+                                                type="file"
+                                                accept=".pdf"
+                                                className="cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-sm file:text-primary"
+                                                onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                                                onBlur={field.onBlur}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">PDF uniquement - Max 5 Mo</p>
+                                        {/* {serverErrors.requestLetter && (
                                     <p className="text-sm text-destructive">{serverErrors.requestLetter[0]}</p>
                                 )} */}
-                            </div>
+                                    </div>
+                                )}
+                            />
+
 
                         </div>
                     </div>
@@ -348,7 +354,7 @@ export default function AudienceForm() {
                     <Button
                         type="submit"
                         disabled={isPending}
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/50"
                         size="lg"
                     >
                         {isPending ? (

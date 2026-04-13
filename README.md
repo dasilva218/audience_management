@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Audience_Gouv
 
-## Getting Started
+## Description
 
-First, run the development server:
+**Audience_Gouv** est une application web permettant aux citoyens et aux organisations d'envoyer facilement des demandes d'audience aux différentes structures ministérielles du gouvernement gabonais.
+
+L'objectif de l'application est de simplifier le processus de demande d'audience en offrant une plateforme numérique accessible sans obligation de création de compte.
+
+## Objectifs du projet
+
+- Faciliter la communication entre les citoyens et les ministères.
+- Simplifier le processus de demande d'audience.
+- Centraliser les demandes adressées aux institutions gouvernementales.
+- Améliorer l'accessibilité aux services administratifs.
+
+## Fonctionnalités principales
+
+- Envoi d'une demande d'audience via un formulaire en ligne.
+- Sélection de la structure ministérielle concernée.
+- Transmission de la demande directement à l'administration compétente.
+- Utilisation sans création de compte utilisateur.
+
+## Technologies utilisées
+
+- **Next.js**
+- **TypeScript**
+- **HTML**
+- **CSS**
+
+## Public cible
+
+Cette application s'adresse principalement à :
+
+- Les citoyens souhaitant solliciter une audience auprès d'un ministère.
+- Les organisations ou entreprises ayant besoin de rencontrer une autorité administrative.
+- Les structures ministérielles du gouvernement gabonais chargées de traiter les demandes.
+
+## Installation du projet
+
+1. Cloner le projet :
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/votre-repository/audience-gouv.git
+
+Accéder au dossier du projet :
+
+cd audience-gouv
+
+Installer les dépendances :
+
+pnpm install
+
+Lancer le serveur de développement :
+
 pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir dans le navigateur :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
+Utilisation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Accéder à l'application via le navigateur.
 
-## Learn More
+Remplir le formulaire de demande d'audience.
 
-To learn more about Next.js, take a look at the following resources:
+Sélectionner le ministère concerné.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Envoyer la demande.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+La demande sera ensuite transmise à la structure ministérielle correspondante.
 
-## Deploy on Vercel
+Auteur
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Da Silva
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Licence
+
+Ce projet est destiné à faciliter la communication entre les citoyens et les institutions publiques du Gabon.

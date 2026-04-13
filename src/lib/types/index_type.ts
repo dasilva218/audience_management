@@ -1,3 +1,4 @@
+import { Ministry } from "@/generated/prisma/client";
 import { Clock } from "lucide-react";
 
 export type StatCardProps = {
@@ -8,11 +9,8 @@ export type StatCardProps = {
   bg: string
 };
 
-export interface Ministry {
-  id: string
-  name: string
-  slug: string
-}
+export type Ministri = Omit<Ministry, "description" | "createdAt" | "updatedAt">
+
 
 // context publicHeader type
 export type PublicHeaderContextType = {

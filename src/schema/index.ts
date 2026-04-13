@@ -48,37 +48,10 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const ACCEPTED_PDF_TYPE = "application/pdf";
 
-const fileSchema = z.instanceof(File).superRefine((file, ctx) => {
-  if (file.size > MAX_FILE_SIZE) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Le fichier ne peut exceder 5MB",
-    });
-  }
-});
-
-const imageSchema = fileSchema.superRefine((file, ctx) => {
-  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Format accepte: JPG, PNG ou WEBP",
-    });
-  }
-});
-
-const pdfSchema = fileSchema.superRefine((file, ctx) => {
-  if (file.type !== ACCEPTED_PDF_TYPE) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Format accepte: PDF uniquement",
-    });
-  }
-});
 
 export const audienceRequestSchema = z.object({
-  // identityDoc: z
-  //   .union([imageSchema, pdfSchema]),
-  // requestLetter: pdfSchema,
+  identityDoc: z.file(),
+  requestLetter: z.file(),
   firstName: z
     .string()
     .min(2, "Le prenom doit contenir au moins 2 caracteres")

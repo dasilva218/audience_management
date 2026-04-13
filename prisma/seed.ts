@@ -5,6 +5,7 @@ enum UserRole {
   AGENT = "AGENT",
   ADMIN = "ADMIN",
 }
+
 async function main() {
   // Récupération des ministères existants
   const ministries = await prisma.ministry.findMany({

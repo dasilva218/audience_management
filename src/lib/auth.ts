@@ -1,6 +1,5 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import prisma from "./prisma";
 
@@ -16,7 +15,7 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: ["AGENT", "ADMIN"],
-        input: false,
+        input: true,
         // default: "AGENT" // Valeur par défaut si non spécifié
       },
       // ministryId: {

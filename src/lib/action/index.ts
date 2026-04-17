@@ -61,7 +61,7 @@ export const SubmitAudience = async () => {
 }
 
 export async function submitAudienceRequest(formData: FormData) {
-  
+
   const rawData = {
     firstName: formData.get("firstName") as string,
     lastName: formData.get("lastName") as string,
@@ -71,28 +71,27 @@ export async function submitAudienceRequest(formData: FormData) {
     ministryId: formData.get("ministryId") as string,
     subject: formData.get("subject") as string,
     description: formData.get("description") as string,
+    identityDoc: formData.get("identityDoc") as File | null,
+    requestLetter: formData.get("requestLetter") as File | null,
   }
-  console.log(rawData);
-  return
+
   const result = audienceRequestSchema.safeParse(rawData)
+
   if (!result.success) {
     return {
       success: false as const,
-      errors: result.error.flatten().fieldErrors,
+      errors: result.error,
     }
   }
-
   // File validation simulation
-  const identityDoc = formData.get("identityDoc") as File | null
-  const requestLetter = formData.get("requestLetter") as File | null
 
-  if (!identityDoc || identityDoc.size === 0) {
+  if (!rawData.identityDoc || rawData.identityDoc.size === 0) {
     return {
       success: false as const,
       errors: { identityDoc: ["La piece d'identite est requise"] },
     }
   }
-  if (!requestLetter || requestLetter.size === 0) {
+  if (!rawData.requestLetter || rawData.requestLetter.size === 0) {
     return {
       success: false as const,
       errors: { requestLetter: ["La lettre de demande est requise"] },
@@ -101,13 +100,13 @@ export async function submitAudienceRequest(formData: FormData) {
 
   // Validate file types
   const allowedTypes = ["application/pdf", "image/jpeg", "image/png"]
-  if (!allowedTypes.includes(identityDoc.type)) {
+  if (!allowedTypes.includes(rawData.identityDoc.type)) {
     return {
       success: false as const,
       errors: { identityDoc: ["Format accepte: PDF, JPEG, PNG"] },
     }
   }
-  if (requestLetter.type !== "application/pdf") {
+  if (rawData.requestLetter.type !== "application/pdf") {
     return {
       success: false as const,
       errors: { requestLetter: ["Format accepte: PDF uniquement"] },
@@ -116,13 +115,13 @@ export async function submitAudienceRequest(formData: FormData) {
 
   // Validate file sizes (max 5MB)
   const maxSize = 5 * 1024 * 1024
-  if (identityDoc.size > maxSize) {
+  if (rawData.identityDoc.size > maxSize) {
     return {
       success: false as const,
       errors: { identityDoc: ["La taille maximale est de 5 Mo"] },
     }
   }
-  if (requestLetter.size > maxSize) {
+  if (rawData.requestLetter.size > maxSize) {
     return {
       success: false as const,
       errors: { requestLetter: ["La taille maximale est de 5 Mo"] },
@@ -136,8 +135,6 @@ export async function submitAudienceRequest(formData: FormData) {
     trackingCode: newRequest.trackingCode,
   }
 }
-
-
 
 export type AuthPromise = {
   success: boolean

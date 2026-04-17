@@ -31,7 +31,7 @@ enum UserRole {
 // --- Modèles de l'Application ---
 
 model Ministry {
-  id          String   @id @default(cuid())
+  id_ministry String   @id @default(cuid())
   name        String   @unique // ex: "Ministère de l'Économie Numérique"
   slug        String   @unique // ex: "ministere-economie-numerique"
   description String?
@@ -44,7 +44,7 @@ model Ministry {
 }
 
 model AudienceRequest {
-  id           String @id @default(cuid())
+  id_audience  String @id @default(cuid())
   trackingCode String @unique // Code généré type "AUD-2024-XXXX"
 
   // Informations du Demandeur (Public)
@@ -55,8 +55,8 @@ model AudienceRequest {
   message  String? @db.Text
 
   // Documents (Stockage des URLs/Chemins)
-  idCardUrl     String // URL du PDF/Image de la pièce d'identité
-  requestPdfUrl String // URL du PDF de la demande officielle
+  identityDocUrl   String // URL du PDF/Image de la pièce d'identité
+  requestLetterUrl String // URL du PDF de la demande officielle
 
   // Suivi interne
   status      RequestStatus @default(PENDING)
@@ -65,7 +65,7 @@ model AudienceRequest {
 
   // Relations
   ministryId String
-  ministry   Ministry @relation(fields: [ministryId], references: [id])
+  ministry   Ministry @relation(fields: [ministryId], references: [id_ministry])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,7 +88,7 @@ model User {
   // Champ personnalisé : Rôle et appartenance
   role       UserRole  @default(AGENT) // admin, agent
   ministryId String?
-  ministry   Ministry? @relation(fields: [ministryId], references: [id])
+  ministry   Ministry? @relation(fields: [ministryId], references: [id_ministry])
 
   sessions Session[]
   accounts Account[]

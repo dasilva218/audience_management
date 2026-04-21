@@ -9,7 +9,7 @@ export type StatCardProps = {
   bg: string
 };
 
-export type Ministri = Omit<Ministry, "description" | "createdAt" | "updatedAt">
+export type MinistryType = Omit<Ministry, "description" | "createdAt" | "updatedAt">
 
 
 // context publicHeader type

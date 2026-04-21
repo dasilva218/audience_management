@@ -5,12 +5,15 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useMinistryContext } from "@/context/ministryContextProvider";
 import useDemandeForm from "@/hooks/demandeForm";
 import { MINISTRIES } from "@/lib/data/index_data";
 import { CheckCircle2, FileTextIcon, Loader2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 
 export default function AudienceForm() {
+
+    const { ministries } = useMinistryContext()
 
     const { form, isPending, trackingCode, setTrackingCode, onSubmit } = useDemandeForm()
 
@@ -197,8 +200,8 @@ export default function AudienceForm() {
                                                 <SelectValue placeholder="Selectionner un ministere" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {MINISTRIES.map((ministry) => (
-                                                    <SelectItem key={ministry.id} value={ministry.id}>
+                                                {ministries?.map((ministry) => (
+                                                    <SelectItem key={ministry.id_ministry} value={ministry.id_ministry}>
                                                         {ministry.name}
                                                     </SelectItem>
                                                 ))}
@@ -210,9 +213,6 @@ export default function AudienceForm() {
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
-
-
-
                                 </div>
                             )}
                         />

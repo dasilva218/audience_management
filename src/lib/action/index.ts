@@ -4,6 +4,9 @@ import { auth } from "@/lib/auth"
 import { audienceRequestSchema, LoginFormData, RegisterFormData } from "@/schema"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import prisma from "../prisma"
+import { Ministry } from "@/generated/prisma/client"
+import { MinistryType } from "../types/index_type"
 
 export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
   try {
@@ -135,6 +138,42 @@ export async function submitAudienceRequest(formData: FormData) {
     trackingCode: newRequest.trackingCode,
   }
 }
+
+export const getMinistries = async () => {
+
+  try {
+
+    const res = await prisma.ministry.findMany({
+      select: {
+        id_ministry: true,
+        name: true,
+        slug: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+
+    if (!res) {
+      return []
+    }
+
+    const ministries: MinistryType[] = res.map((item) => ({
+      id_ministry: item.id_ministry,
+      name: item.name,
+      slug: item.slug,
+    }))
+
+    return ministries
+
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}
+
+
+
 
 export type AuthPromise = {
   success: boolean

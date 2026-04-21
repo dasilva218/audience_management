@@ -1,5 +1,6 @@
 "use client"
 import AudienceForm from "../components/AudienceForm";
+import MinistryContextProvider from "@/context/ministryContextProvider";
 
 export default function pageDemande() {
   return (
@@ -15,7 +16,9 @@ export default function pageDemande() {
               Aucun compte n{"'"}est requis.
             </p>
           </div>
-          <AudienceForm />
+          <MinistryContextProvider>
+            <AudienceForm />
+          </MinistryContextProvider>
         </div>
       </main>
     </div>

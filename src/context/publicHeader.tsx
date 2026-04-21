@@ -21,7 +21,7 @@ export const PublicHeaderProvider = ({ children }: { children: React.ReactNode }
 
   return (
     <PublicHeaderContext.Provider value={{ pathname, setMobileOpen, mobileOpen }}>
-    { children }
+      {children}
     </PublicHeaderContext.Provider>
   )
 }   

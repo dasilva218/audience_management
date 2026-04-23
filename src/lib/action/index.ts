@@ -38,7 +38,7 @@ export const SignUp = async (params: RegisterFormData): Promise<AuthPromise> => 
           name: params.email.split("@")[0], // Utiliser l'email pour générer un nom par défaut
           email: params.email,
           password: params.password,
-          // role: params.role,
+          role: params.role,
           callbackURL: `${process.env.NEXT_PUBLIC_BASE_URL}/login`
         }
       }
@@ -65,7 +65,7 @@ export const SubmitAudience = async () => {
 
 }
 
-export async function submitAudienceRequest(formData: FormData) {
+export const submitAudienceRequest = async (formData: FormData) => {
 
   const rawData = {
     firstName: formData.get("firstName") as string,
@@ -217,18 +217,8 @@ export async function submitAudienceRequest(formData: FormData) {
       errors: { message: "Erreur lors de la création de la demande" },
     }
   }
-
-
-
-
-
-
-
-  // return {
-  //   success: true as const,
-  //   trackingCode: newRequest.trackingCode,
-  // }
 }
+
 
 export const getMinistries = async () => {
 

@@ -1,12 +1,12 @@
 import prisma from "@/lib/prisma";
-import { SeedUsers } from "@/lib/services";
+import { SeedMinistries, SeedUsers } from "@/lib/services";
 
 
 
 async function main() {
 
   const result = await SeedUsers()
-
+  // const result = await SeedMinistries()
   return
 
 }

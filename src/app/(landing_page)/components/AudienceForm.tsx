@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMinistryContext } from "@/context/ministryContextProvider";
 import useDemandeForm from "@/hooks/demandeForm";
-import { MINISTRIES } from "@/lib/data/index_data";
 import { CheckCircle2, FileTextIcon, Loader2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 

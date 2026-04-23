@@ -7,6 +7,8 @@ import { redirect } from "next/navigation"
 import prisma from "../prisma"
 import { Ministry } from "@/generated/prisma/client"
 import { MinistryType } from "../types/index_type"
+import { GenerateTrackingCode } from "../services"
+import { supabaseClient } from "../supabase/client"
 
 export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
   try {
@@ -86,21 +88,20 @@ export async function submitAudienceRequest(formData: FormData) {
       errors: result.error,
     }
   }
-  // File validation simulation
-
+  // validation des fichiers pdf et image et format
   if (!rawData.identityDoc || rawData.identityDoc.size === 0) {
     return {
       success: false as const,
       errors: { identityDoc: ["La piece d'identite est requise"] },
     }
   }
+
   if (!rawData.requestLetter || rawData.requestLetter.size === 0) {
     return {
       success: false as const,
       errors: { requestLetter: ["La lettre de demande est requise"] },
     }
   }
-
   // Validate file types
   const allowedTypes = ["application/pdf", "image/jpeg", "image/png"]
   if (!allowedTypes.includes(rawData.identityDoc.type)) {
@@ -109,6 +110,7 @@ export async function submitAudienceRequest(formData: FormData) {
       errors: { identityDoc: ["Format accepte: PDF, JPEG, PNG"] },
     }
   }
+
   if (rawData.requestLetter.type !== "application/pdf") {
     return {
       success: false as const,
@@ -124,6 +126,7 @@ export async function submitAudienceRequest(formData: FormData) {
       errors: { identityDoc: ["La taille maximale est de 5 Mo"] },
     }
   }
+
   if (rawData.requestLetter.size > maxSize) {
     return {
       success: false as const,
@@ -131,12 +134,100 @@ export async function submitAudienceRequest(formData: FormData) {
     }
   }
 
-  const newRequest = createRequest(result.data)
+  try {
 
-  return {
-    success: true as const,
-    trackingCode: newRequest.trackingCode,
+    // Création de nom unique pour la demande
+    const timestamp = Date.now();
+    const letterFileName = `${timestamp}-${result.data.lastName.replace(/\s+/g, '-')}-letter-demande`;
+    const identityFileName = `${timestamp}-${result.data.lastName.replace(/\s+/g, '-')}-piece-identity`;
+
+    // Création du chemin pour les fichiers
+    const identityFilePath = `identity/${identityFileName}`;
+    const letterFilePath = `letter/${letterFileName}`;
+
+    // upload des fichiers avec supabase storage
+    const [identityDocUrl, requestLetterUrl] = await Promise.all([
+
+      await supabaseClient().storage.from('request').upload(
+        identityFilePath,
+        result.data.identityDoc,
+        {
+          contentType: result.data.identityDoc.type,
+          cacheControl: '3600'
+        }
+      ),
+
+      await supabaseClient().storage.from('request').upload(
+        letterFilePath,
+        result.data.requestLetter,
+        {
+          contentType: result.data.requestLetter.type,
+          cacheControl: '3600'
+        }
+      )
+    ])
+
+    if (identityDocUrl.error || requestLetterUrl.error) {
+      return {
+        success: false as const,
+        errors: { identityDoc: [identityDocUrl.error?.message || ""], requestLetter: [requestLetterUrl.error?.message || ""] },
+      }
+    }
+    // Récupération de l'URL publique
+    const { data: urlIdentityDoc } = supabaseClient().storage
+      .from('request')
+      .getPublicUrl(identityFilePath);
+
+    const { data: urlRequestLetter } = supabaseClient().storage
+      .from('request')
+      .getPublicUrl(letterFilePath);
+
+    const newAudienceRequest = {
+      trackingCode: GenerateTrackingCode(),
+      fullName: `${result.data.firstName} ${result.data.lastName}`,
+      email: result.data.email,
+      phone: result.data.phone,
+      subject: result.data.subject,
+      message: result.data.description,
+      identityDocUrl: urlIdentityDoc.publicUrl,
+      requestLetterUrl: urlRequestLetter.publicUrl,
+      ministryId: result.data.ministryId,
+    }
+
+    const createdRequest = await prisma.audienceRequest.create({
+      data: newAudienceRequest
+    })
+
+    if (!createdRequest) {
+      return {
+        success: false as const,
+        errors: { message: "Erreur lors de la création de la demande" },
+      }
+    }
+
+    return {
+      success: true as const,
+      trackingCode: createdRequest.trackingCode,
+    }
+
+  } catch (error) {
+    console.log(error)
+    return {
+      success: false as const,
+      errors: { message: "Erreur lors de la création de la demande" },
+    }
   }
+
+
+
+
+
+
+
+  // return {
+  //   success: true as const,
+  //   trackingCode: newRequest.trackingCode,
+  // }
 }
 
 export const getMinistries = async () => {

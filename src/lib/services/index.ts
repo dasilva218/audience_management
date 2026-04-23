@@ -89,3 +89,10 @@ export const SeedUsers = async () => {
 
   console.log('\n🎉 Tous les utilisateurs ont été créés avec succès.');
 }
+
+export const GenerateTrackingCode = (): string => {
+  const year = new Date().getFullYear()
+  const num = String(Math.floor(Math.random() * 999999)).padStart(6, "0")
+  return `AUD-${year}-${num}`
+}
+

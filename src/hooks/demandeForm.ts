@@ -4,6 +4,7 @@ import { AudienceRequestFormData, audienceRequestSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 
 export default function useDemandeForm() {
@@ -25,15 +26,15 @@ export default function useDemandeForm() {
     })
 
     startTransition(async () => {
-      const result = await submitAudienceRequest(formData)
-      // if (result.success) {
-      //   setTrackingCode(result.trackingCode)
-      //   toast.success("Demande soumise avec succes !")
-      //   form.reset()
-      // } else {
-      //   // setServerErrors(result.errors ?? {})
-      //   toast.error("Veuillez corriger les erreurs du formulaire.")
-      // }
+      const { success, trackingCode, errors } = await submitAudienceRequest(formData)
+      if (success) {
+        setTrackingCode(trackingCode)
+        toast.success("Demande soumise avec succes !")
+        form.reset()
+      } else {
+        // setServerErrors(result.errors ?? {})
+        toast.error("Veuillez corriger les erreurs du formulaire.")
+      }
     })
 
   }

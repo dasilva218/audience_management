@@ -32,6 +32,7 @@ export default function useDemandeForm() {
         toast.success("Demande soumise avec succes !")
         form.reset()
       } else {
+        console.log(errors)
         // setServerErrors(result.errors ?? {})
         toast.error("Veuillez corriger les erreurs du formulaire.")
       }

@@ -1,5 +1,5 @@
 
-import { NavLink } from "../types/index_type";
+import { MinistryType, NavLink } from "../types/index_type";
 
 
 enum UserRole {
@@ -11,6 +11,14 @@ export const navLinks: NavLink[] = [
   { href: "/", label: "Accueil" },
   { href: "/demande", label: "Nouvelle demande" },
   { href: "/suivi", label: "Suivi" },
+]
+
+export const MINISTRIES: Omit<MinistryType, 'id_ministry'>[] = [
+
+  { name: "Ministere de l'Economie Numérique", slug: "ministere-economie-numerique" },
+  { name: "Ministere de la Santé", slug: "ministere-sante-publique" },
+  { name: "Ministere de l'Education Nationale", slug: "ministere-education-nationale" },
+
 ]
 
 

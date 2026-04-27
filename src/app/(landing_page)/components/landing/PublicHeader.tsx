@@ -8,23 +8,15 @@ import Link from "next/link"
 
 
 export function PublicHeader() {
-
-  const { mobileOpen } = usePublicHeaderContext()
-
   return (
-    <PublicHeaderProvider>
-      <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+    <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <PublicHeaderProvider>
         {/* Top Bar */}
         <TopBar />
-
         {/* Main Nav */}
         <MainNav />
-
-        {/* Mobile Nav */}
-        {mobileOpen && (<MobileNav />)}
-
-      </header>
-    </PublicHeaderProvider>
+      </PublicHeaderProvider>
+    </header>
   )
 }
 
@@ -50,46 +42,49 @@ function MainNav() {
   const { pathname, setMobileOpen, mobileOpen } = usePublicHeaderContext()
 
   return (
-    <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-      <Link href="/" className="flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-          <Shield className="h-5 w-5 text-primary-foreground" />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-bold text-foreground leading-tight">E-Audience</span>
-          <span className="text-[10px] text-muted-foreground leading-tight">Gabon</span>
-        </div>
-      </Link>
+    <>
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <Shield className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-foreground leading-tight">E-Audience</span>
+            <span className="text-[10px] text-muted-foreground leading-tight">Gabon</span>
+          </div>
+        </Link>
 
-      {/* Desktop Nav */}
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Navigation principale">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              pathname === link.href
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            )}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+        {/* Desktop Nav */}
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Navigation principale">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                pathname === link.href
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-      {/* Mobile toggle */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="md:hidden"
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Menu"
-      >
-        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
-    </div>
+        {/* Mobile toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Menu"
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+      {mobileOpen && (<MobileNav />)}
+    </>
   )
 }
 // composant nav mobile

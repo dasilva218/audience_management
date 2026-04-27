@@ -61,8 +61,21 @@ export const SignOut = async () => {
   redirect('/login')
 }
 
-export const SubmitAudience = async () => {
-
+export const lookupRequest = async (trackingCode: string) => {
+  try {
+    const request = await prisma.audienceRequest.findUnique({
+      where: {
+        trackingCode: trackingCode,
+      },
+    })
+    if (!request) {
+      return { success: false, message: "Demande non trouvée" }
+    }
+    return { success: true, request }
+  } catch (error) {
+    console.log(error)
+    return { success: false, message: "Erreur lors de la recherche" }
+  }
 }
 
 export const submitAudienceRequest = async (formData: FormData) => {

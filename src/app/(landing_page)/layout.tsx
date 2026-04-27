@@ -10,7 +10,11 @@ export default function LandingLayout({
     <html lang="fr">
       <body className="font-sans suppressHydrationWarning antialiased">
         <PublicHeader />
-        {children}
+        <div className="min-h-screen bg-background">
+          <main className="py-8 px-4">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

@@ -1,8 +1,11 @@
-
-
-import { auth } from "../auth";
+import { auth } from "../betterAuth/auth";
 import { MINISTRIES, usersData } from "../data/index_data";
 import prisma from "../prisma";
+
+export const hashedPassword = async (password: string) => {
+  const context = await auth.$context;
+  return context.password.hash(password);
+};
 
 export const SeedMinistries = async () => {
   const ministriesData = MINISTRIES

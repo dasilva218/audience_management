@@ -1,7 +1,8 @@
 'use client'
-import AdminDashboard from "@/components/admin/AdminDashboard"
-import { useSession } from "@/lib/auth-client"
+// import AdminDashboard from "@/components/admin/AdminDashboard"
+import { useSession } from "@/lib/betterAuth/auth-client"
 import { Loader2Icon } from "lucide-react"
+import AdminDashboard from "../components/admin/AdminDashboard"
 
 export default function AdminPage() {
 
@@ -17,14 +18,9 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {session ? (
-        <AdminDashboard />
-      ) : (
-          <AdminDashboard />
-        // <div className="flex min-h-screen items-center justify-center bg-background">
-        //   <h1 className="text-4xl font-bold text-primary">You are not authorized to view this page</h1>
-        // </div>
-      )}
+
+      <AdminDashboard />
+
     </div>
   )
 

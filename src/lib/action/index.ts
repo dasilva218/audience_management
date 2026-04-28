@@ -1,17 +1,18 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/betterAuth/auth"
 import { audienceRequestSchema, LoginFormData, RegisterFormData } from "@/schema"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import prisma from "../prisma"
-import { Ministry } from "@/generated/prisma/client"
 import { MinistryType } from "../types/index_type"
 import { GenerateTrackingCode } from "../services"
 import { supabaseClient } from "../supabase/client"
 
 export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
+
   try {
+
     const { url } = await auth.api.signInEmail(
       {
         headers: await headers(),
@@ -22,11 +23,15 @@ export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
         }
       }
     )
+
     return { success: true, message: "Connexion réussie", callbackURL: url }
+
   } catch (error) {
+
     const e = error as Error
     console.log(e);
     return { success: false, message: "Erreur de connexion" }
+
   }
 }
 
@@ -232,7 +237,6 @@ export const submitAudienceRequest = async (formData: FormData) => {
   }
 }
 
-
 export const getMinistries = async () => {
 
   try {
@@ -265,9 +269,6 @@ export const getMinistries = async () => {
     return []
   }
 }
-
-
-
 
 export type AuthPromise = {
   success: boolean

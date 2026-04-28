@@ -1,6 +1,7 @@
+import { Button } from "@/components/ui/button";
 import { SignOut } from "@/lib/action";
 import { LogOut } from "lucide-react";
-import { Button } from "../ui/button";
+// import { Button } from "../ui/button";
 
 export default function Header() {
   return (

@@ -18,6 +18,11 @@ export const auth = betterAuth({
         input: true,
         desfault: "AGENT" // Valeur par défaut si non spécifié
       },
+      ministryId: {
+        type: "string",
+        input: false,
+        desfault: null
+      },
     }
   },
 

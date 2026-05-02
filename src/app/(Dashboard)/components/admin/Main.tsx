@@ -4,14 +4,15 @@ import { StatCardProps } from "@/lib/types/index_type";
 import { BarChart3, CheckCircle, Clock, FileCheck, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AudienceRequest } from "@/generated/prisma/client";
 
-export default function Main() {
+export default function Main({ audienceRequests }: { audienceRequests: AudienceRequest[] | null }) {
 
   const [stats, setStats] = useState({ total: 0, enAttente: 0, acceptees: 0, rejetees: 0, terminees: 0 })
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
-      <Tabs>
+      <Tabs defaultValue="overview">
         <TabsList className="w-fit">
           <TabsTrigger value="overview">
             <BarChart3 className="mr-2 h-4 w-4" />

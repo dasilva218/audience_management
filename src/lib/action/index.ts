@@ -8,6 +8,7 @@ import prisma from "../prisma"
 import { MinistryType } from "../types/index_type"
 import { GenerateTrackingCode } from "../services"
 import { supabaseClient } from "../supabase/client"
+import { AudienceRequest } from "@/generated/prisma/client"
 
 export const SignIn = async (params: LoginFormData): Promise<AuthPromise> => {
 
@@ -66,6 +67,7 @@ export const SignOut = async () => {
   redirect('/login')
 }
 
+// suivre une demande d'audience
 export const lookupRequest = async (trackingCode: string) => {
   try {
     const request = await prisma.audienceRequest.findUnique({
@@ -83,6 +85,7 @@ export const lookupRequest = async (trackingCode: string) => {
   }
 }
 
+// soumettre une demande d'audience
 export const submitAudienceRequest = async (formData: FormData) => {
 
   const rawData = {
@@ -237,6 +240,7 @@ export const submitAudienceRequest = async (formData: FormData) => {
   }
 }
 
+// recuperation de la liste des ministeres
 export const getMinistries = async () => {
 
   try {
@@ -269,6 +273,102 @@ export const getMinistries = async () => {
     return []
   }
 }
+
+// recuperation d'un ministere par son id
+export const getMinistryById = async (id: string) => {
+
+  try {
+
+    const res = await prisma.ministry.findUnique({
+      where: {
+        id_ministry: id,
+      },
+      select: {
+        id_ministry: true,
+        name: true,
+        slug: true,
+      },
+    })
+
+    if (!res) {
+      return null
+    }
+
+    const ministry: MinistryType = {
+      id_ministry: res.id_ministry,
+      name: res.name,
+      slug: res.slug,
+    }
+
+    return ministry
+
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+// recuperation de la liste des demandes d'audience
+export const getAudienceRequests = async (ministryId: string) => {
+
+  try {
+
+    const res = await prisma.audienceRequest.findMany({
+      where: {
+        ministryId: ministryId,
+      },
+      select: {
+        id_audience: true,
+        trackingCode: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        subject: true,
+        message: true,
+        identityDocUrl: true,
+        requestLetterUrl: true,
+        ministryId: true,
+        status: true,
+        adminNote: true,
+        scheduledAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    if (!res) {
+      return []
+    }
+
+    const audienceRequests: AudienceRequest[] = res.map((item) => ({
+      id_audience: item.id_audience,
+      trackingCode: item.trackingCode,
+      fullName: item.fullName,
+      email: item.email,
+      phone: item.phone,
+      subject: item.subject,
+      message: item.message,
+      identityDocUrl: item.identityDocUrl,
+      requestLetterUrl: item.requestLetterUrl,
+      ministryId: item.ministryId,
+      status: item.status,
+      adminNote: item.adminNote,
+      scheduledAt: item.scheduledAt,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }))
+
+    return audienceRequests
+
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}
+
 
 export type AuthPromise = {
   success: boolean

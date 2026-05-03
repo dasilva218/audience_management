@@ -46,7 +46,7 @@ export default function AdminPage() {
       {/* Admin Header */}
       <Header ministry={ministry} user={user ?? null} />
       {/* Admin main */}
-      <Main audienceRequests={audienceRequests} />
+      <Main ministryId={user?.ministryId ?? ""} audienceRequests={audienceRequests} />
 
     </div>
   )

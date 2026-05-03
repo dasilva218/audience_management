@@ -370,6 +370,42 @@ export const getAudienceRequests = async (ministryId: string) => {
 }
 
 
+export const getDashboardStats = async (ministryId: string) => {
+
+  try {
+
+    const res = await prisma.audienceRequest.findMany({
+      where: {
+        ministryId: ministryId,
+      },
+      select: {
+        status: true,
+      },
+    })
+
+    if (!res) {
+      return null
+    }
+
+    const stats = {
+      total: res.length,
+      pending: res.filter((item) => item.status === "PENDING").length,
+      rejected: res.filter((item) => item.status === "REJECTED").length,
+      scheduled: res.filter((item) => item.status === "SCHEDULED").length,
+      processing: res.filter((item) => item.status === "PROCESSING").length,
+      completed: res.filter((item) => item.status === "COMPLETED").length,
+    }
+
+
+    return stats
+
+  } catch (error) {
+    console.log(error)
+    return
+  }
+}
+
+
 export type AuthPromise = {
   success: boolean
   message: string

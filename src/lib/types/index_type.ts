@@ -25,3 +25,12 @@ export type NavLink = {
   href: string;
   label: string;
 }
+
+export type StatsType = {
+  total: number
+  pending: number
+  rejected: number
+  scheduled: number
+  processing: number
+  completed: number
+}

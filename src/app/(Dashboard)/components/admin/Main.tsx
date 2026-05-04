@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useState } from "react";
-import { StatCardProps } from "@/lib/types/index_type";
+import { StatCardProps, StatsType } from "@/lib/types/index_type";
 import { BarChart3, CheckCircle, Clock, Eye, FileCheck, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +8,7 @@ import { AudienceRequest, RequestStatus } from "@/generated/prisma/client";
 import { getDashboardStats } from "@/lib/action";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const statusStyles: Record<RequestStatus, string> = {
   PENDING: "bg-amber-100 text-amber-800 border-amber-200",
@@ -28,7 +29,45 @@ export const STATUS_LABELS: Record<string, string> = {
 export default function Main({ ministryId, audienceRequests }: { ministryId: string, audienceRequests: AudienceRequest[] | null }) {
 
   const [selectedRequest, setSelectedRequest] = useState<AudienceRequest | null>(null)
-  const [stats, setStats] = useState({ total: 0, pending: 0, rejected: 0, scheduled: 0, processing: 0, completed: 0 })
+  const [stats, setStats] = useState<StatsType | null>(null)
+  const [filterStatus, setFilterStatus] = useState<string>("ALL")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const StatsData = [
+    {
+      label: "Total",
+      value: stats?.total!,
+      icon: FileText,
+      color: "text-foreground",
+      bg: "bg-muted",
+    },
+    {
+      label: "En Attente",
+      value: stats?.pending ?? 0,
+      icon: FileText,
+      color: "text-foreground",
+      bg: "bg-muted",
+    },
+    {
+      label: "Acceptees",
+      value: stats?.processing ?? 0,
+      icon: FileText,
+      color: "text-foreground",
+      bg: "bg-muted",
+    },
+    {
+      label: "Terminees",
+      value: stats?.completed ?? 0,
+      icon: FileText,
+      color: "text-foreground",
+      bg: "bg-muted",
+    }
+  ]
+
+  const filteredRequests =
+    filterStatus === "ALL"
+      ? audienceRequests
+      : audienceRequests?.filter((r) => r.status === filterStatus)
 
   const getData = useCallback(async () => {
     const stats = await getDashboardStats(ministryId)
@@ -71,34 +110,16 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
             <TabsContent value="overview">
               <div className="flex flex-col gap-6">
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                  <StatCard
-                    label="Total"
-                    value={stats.total}
-                    icon={FileText}
-                    color="text-foreground"
-                    bg="bg-muted"
-                  />
-                  <StatCard
-                    label="En attente"
-                    value={stats.pending}
-                    icon={Clock}
-                    color="text-amber-700"
-                    bg="bg-amber-50"
-                  />
-                  <StatCard
-                    label="Acceptees"
-                    value={stats.scheduled}
-                    icon={CheckCircle}
-                    color="text-emerald-700"
-                    bg="bg-emerald-50"
-                  />
-                  <StatCard
-                    label="Terminees"
-                    value={stats.completed}
-                    icon={FileCheck}
-                    color="text-blue-700"
-                    bg="bg-blue-50"
-                  />
+                  {StatsData.map((stat, index) => (
+                    <StatCard
+                      key={index}
+                      label={stat.label}
+                      value={stat.value}
+                      icon={stat.icon}
+                      color={stat.color}
+                      bg={stat.bg}
+                    />))
+                  }
                 </div>
 
                 {/* Recent requests */}
@@ -119,6 +140,66 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
               </div>
             </TabsContent>
 
+            <TabsContent value="requests">
+              <Card>
+                <CardHeader>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <CardTitle className="text-lg text-foreground">
+                        Toutes les demandes
+                      </CardTitle>
+                      <CardDescription>
+                        {audienceRequests?.length} demande(s) trouvee(s)
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="w-full sm:w-48">
+                          <SelectValue placeholder="Filtrer par statut" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">Tous les statuts</SelectItem>
+                          <SelectItem value="PENDING">En attente</SelectItem>
+                          <SelectItem value="SCHEDULED">Acceptees</SelectItem>
+                          <SelectItem value="REJECTED">Rejetees</SelectItem>
+                          <SelectItem value="COMPLETED">Terminees</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={String(pageSize)}
+                        onValueChange={(v) => setPageSize(Number(v))}
+                      >
+                        <SelectTrigger className="w-full sm:w-36">
+                          <SelectValue placeholder="Par page" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5 par page</SelectItem>
+                          <SelectItem value="10">10 par page</SelectItem>
+                          <SelectItem value="20">20 par page</SelectItem>
+                          <SelectItem value="50">50 par page</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <RequestTable
+                    requests={filteredRequests}
+                    onView={setSelectedRequest}
+                  />
+                  {/* {filteredRequests?.length > 0 && (
+                    <TablePagination
+                      currentPage={safePage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                      startIdx={startIdx}
+                      pageSize={pageSize}
+                      total={filteredRequests.length}
+                    />
+                  )} */}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
           </Tabs>)
       }
@@ -127,8 +208,6 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
   );
 
 }
-
-
 
 function StatCard({
   label,
@@ -151,6 +230,7 @@ function StatCard({
     </Card>
   )
 }
+
 
 function RequestTable({
   requests,
@@ -213,169 +293,298 @@ function RequestTable({
   )
 }
 
+function TablePagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+  startIdx,
+  pageSize,
+  total,
+}: {
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  startIdx: number
+  pageSize: number
+  total: number
+}) {
+  const endIdx = Math.min(startIdx + pageSize, total)
 
-// function RequestDetail({
-//   request,
-//   onBack,
-//   onStatusChange,
-// }: {
-//   request: AudienceRequest
-//   onBack: () => void
-//   onStatusChange: () => void
-// }) {
-//   const [isPending, startTransition] = useTransition()
-//   const [currentStatus, setCurrentStatus] = useState(request.status)
+  // Build a compact list of pages with ellipses
+  const pages = getPageNumbers(currentPage, totalPages)
 
-//   function handleStatusChange(newStatus: RequestStatus) {
-//     startTransition(async () => {
-//       const result = await changeRequestStatus(request.id, newStatus)
-//       if (result.success) {
-//         setCurrentStatus(newStatus)
-//         onStatusChange()
-//         toast.success(`Statut mis a jour: ${STATUS_LABELS[newStatus]}`)
-//       } else {
-//         toast.error(result.error)
-//       }
-//     })
-//   }
+  return (
+    <div className="flex flex-col items-center gap-3 border-t pt-4 sm:flex-row sm:justify-between">
+      <p className="text-xs text-muted-foreground">
+        Affichage de <span className="font-medium text-foreground">{startIdx + 1}</span> a{" "}
+        <span className="font-medium text-foreground">{endIdx}</span> sur{" "}
+        <span className="font-medium text-foreground">{total}</span> demande(s)
+      </p>
 
-//   return (
-//     <div className="flex flex-col gap-6">
-//       <Button variant="ghost" onClick={onBack} className="w-fit text-muted-foreground">
-//         <ChevronLeft className="mr-1 h-4 w-4" />
-//         Retour a la liste
-//       </Button>
+      <Pagination className="mx-0 w-fit justify-end">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              aria-disabled={currentPage <= 1}
+              tabIndex={currentPage <= 1 ? -1 : 0}
+              className={
+                currentPage <= 1
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              onClick={(e) => {
+                e.preventDefault()
+                if (currentPage > 1) onPageChange(currentPage - 1)
+              }}
+            />
+          </PaginationItem>
 
-//       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-//         {/* Main info */}
-//         <Card className="lg:col-span-2">
-//           <CardHeader>
-//             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-//               <div>
-//                 <CardTitle className="text-lg text-foreground">{request.subject}</CardTitle>
-//                 <CardDescription className="font-mono">{request.trackingCode}</CardDescription>
-//               </div>
-//               <span
-//                 className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium ${statusStyles[currentStatus]}`}
-//               >
-//                 {STATUS_LABELS[currentStatus]}
-//               </span>
-//             </div>
-//           </CardHeader>
-//           <CardContent className="flex flex-col gap-6">
-//             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-//               <DetailField label="Nom" value={request.lastName} />
-//               <DetailField label="Prenom" value={request.firstName} />
-//               <DetailField label="Email" value={request.email} />
-//               <DetailField label="Telephone" value={request.phone} />
-//               <DetailField label="Piece d'identite" value={request.nationalId} />
-//               <DetailField
-//                 label="Date de soumission"
-//                 value={new Date(request.createdAt).toLocaleDateString("fr-FR", {
-//                   day: "numeric",
-//                   month: "long",
-//                   year: "numeric",
-//                 })}
-//               />
-//             </div>
-//             <div className="border-t pt-4">
-//               <p className="text-sm font-medium text-foreground mb-2">Description</p>
-//               <p className="text-sm text-muted-foreground leading-relaxed">
-//                 {request.description}
-//               </p>
-//             </div>
+          {pages.map((p, i) =>
+            p === "ellipsis" ? (
+              <PaginationItem key={`e-${i}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  href="#"
+                  isActive={p === currentPage}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onPageChange(p)
+                  }}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+          )}
 
-//             {/* Documents */}
-//             <div className="border-t pt-4">
-//               <p className="text-sm font-medium text-foreground mb-3">Documents joints</p>
-//               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-//                 <div className="flex items-center gap-3 rounded-lg border p-3">
-//                   <FileText className="h-5 w-5 text-primary" />
-//                   <div className="flex flex-col">
-//                     <p className="text-sm font-medium text-foreground">Piece d{"'"}identite</p>
-//                     <p className="text-xs text-muted-foreground">Document CNI/Passeport</p>
-//                   </div>
-//                 </div>
-//                 <div className="flex items-center gap-3 rounded-lg border p-3">
-//                   <FileText className="h-5 w-5 text-primary" />
-//                   <div className="flex flex-col">
-//                     <p className="text-sm font-medium text-foreground">Lettre de demande</p>
-//                     <p className="text-xs text-muted-foreground">Document PDF</p>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </CardContent>
-//         </Card>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              aria-disabled={currentPage >= totalPages}
+              tabIndex={currentPage >= totalPages ? -1 : 0}
+              className={
+                currentPage >= totalPages
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              onClick={(e) => {
+                e.preventDefault()
+                if (currentPage < totalPages) onPageChange(currentPage + 1)
+              }}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
+  )
+}
 
-//         {/* Actions sidebar */}
-//         <Card>
-//           <CardHeader>
-//             <CardTitle className="text-base text-foreground">Actions</CardTitle>
-//             <CardDescription>Modifier le statut de cette demande.</CardDescription>
-//           </CardHeader>
-//           <CardContent className="flex flex-col gap-2">
-//             {currentStatus !== "ACCEPTEE" && (
-//               <Button
-//                 onClick={() => handleStatusChange("ACCEPTEE")}
-//                 disabled={isPending}
-//                 className="w-full justify-start bg-emerald-600 text-white hover:bg-emerald-700"
-//               >
-//                 {isPending ? (
-//                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-//                 ) : (
-//                   <CheckCircle className="mr-2 h-4 w-4" />
-//                 )}
-//                 Accepter
-//               </Button>
-//             )}
-//             {currentStatus !== "REJETEE" && (
-//               <Button
-//                 onClick={() => handleStatusChange("REJETEE")}
-//                 disabled={isPending}
-//                 variant="destructive"
-//                 className="w-full justify-start"
-//               >
-//                 {isPending ? (
-//                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-//                 ) : (
-//                   <XCircle className="mr-2 h-4 w-4" />
-//                 )}
-//                 Rejeter
-//               </Button>
-//             )}
-//             {currentStatus === "ACCEPTEE" && (
-//               <Button
-//                 onClick={() => handleStatusChange("TERMINEE")}
-//                 disabled={isPending}
-//                 className="w-full justify-start bg-blue-600 text-white hover:bg-blue-700"
-//               >
-//                 {isPending ? (
-//                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-//                 ) : (
-//                   <FileCheck className="mr-2 h-4 w-4" />
-//                 )}
-//                 Marquer comme terminee
-//               </Button>
-//             )}
-//             {currentStatus !== "EN_ATTENTE" && (
-//               <Button
-//                 onClick={() => handleStatusChange("EN_ATTENTE")}
-//                 disabled={isPending}
-//                 variant="outline"
-//                 className="w-full justify-start"
-//               >
-//                 {isPending ? (
-//                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-//                 ) : (
-//                   <Clock className="mr-2 h-4 w-4" />
-//                 )}
-//                 Remettre en attente
-//               </Button>
-//             )}
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </div>
-//   )
-// }
+
+
+function RequestDetail({
+  request,
+  onBack,
+  onStatusChange,
+}: {
+  request: AudienceRequest
+  onBack: () => void
+  onStatusChange: () => void
+}) {
+  const [isPending, startTransition] = useTransition()
+  const [currentStatus, setCurrentStatus] = useState(request.status)
+
+  function handleStatusChange(newStatus: RequestStatus) {
+    startTransition(async () => {
+      const result = await changeRequestStatus(request.id, newStatus)
+      if (result.success) {
+        setCurrentStatus(newStatus)
+        onStatusChange()
+        toast.success(`Statut mis a jour: ${STATUS_LABELS[newStatus]}`)
+      } else {
+        toast.error(result.error)
+      }
+    })
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <Button variant="ghost" onClick={onBack} className="w-fit text-muted-foreground">
+        <ChevronLeft className="mr-1 h-4 w-4" />
+        Retour a la liste
+      </Button>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Main info */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle className="text-lg text-foreground">{request.subject}</CardTitle>
+                <CardDescription className="font-mono">{request.trackingCode}</CardDescription>
+              </div>
+              <span
+                className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium ${statusStyles[currentStatus]}`}
+              >
+                {STATUS_LABELS[currentStatus]}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <DetailField label="Nom" value={request.lastName} />
+              <DetailField label="Prenom" value={request.firstName} />
+              <DetailField label="Email" value={request.email} />
+              <DetailField label="Telephone" value={request.phone} />
+              <DetailField label="Piece d'identite" value={request.nationalId} />
+              <DetailField
+                label="Date de soumission"
+                value={new Date(request.createdAt).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              />
+            </div>
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium text-foreground mb-2">Description</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {request.description}
+              </p>
+            </div>
+
+            {/* Documents */}
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium text-foreground mb-3">Documents joints</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="flex items-center gap-3 rounded-lg border p-3">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium text-foreground">Piece d{"'"}identite</p>
+                    <p className="text-xs text-muted-foreground">Document CNI/Passeport</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-lg border p-3">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium text-foreground">Lettre de demande</p>
+                    <p className="text-xs text-muted-foreground">Document PDF</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Actions sidebar */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base text-foreground">Actions</CardTitle>
+            <CardDescription>Modifier le statut de cette demande.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {currentStatus !== "ACCEPTEE" && (
+              <Button
+                onClick={() => handleStatusChange("ACCEPTEE")}
+                disabled={isPending}
+                className="w-full justify-start bg-emerald-600 text-white hover:bg-emerald-700"
+              >
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                )}
+                Accepter
+              </Button>
+            )}
+            {currentStatus !== "REJETEE" && (
+              <Button
+                onClick={() => handleStatusChange("REJETEE")}
+                disabled={isPending}
+                variant="destructive"
+                className="w-full justify-start"
+              >
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <XCircle className="mr-2 h-4 w-4" />
+                )}
+                Rejeter
+              </Button>
+            )}
+            {currentStatus === "ACCEPTEE" && (
+              <Button
+                onClick={() => handleStatusChange("TERMINEE")}
+                disabled={isPending}
+                className="w-full justify-start bg-blue-600 text-white hover:bg-blue-700"
+              >
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <FileCheck className="mr-2 h-4 w-4" />
+                )}
+                Marquer comme terminee
+              </Button>
+            )}
+            {currentStatus !== "EN_ATTENTE" && (
+              <Button
+                onClick={() => handleStatusChange("EN_ATTENTE")}
+                disabled={isPending}
+                variant="outline"
+                className="w-full justify-start"
+              >
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Clock className="mr-2 h-4 w-4" />
+                )}
+                Remettre en attente
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+
+function DetailField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-sm font-medium text-foreground">{value}</p>
+    </div>
+  )
+}
+
+
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1)
+  }
+
+  const pages: (number | "ellipsis")[] = [1]
+
+  if (current > 3) {
+    pages.push("ellipsis")
+  }
+
+  const start = Math.max(2, current - 1)
+  const end = Math.min(total - 1, current + 1)
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+
+  if (current < total - 2) {
+    pages.push("ellipsis")
+  }
+
+  pages.push(total)
+  return pages
+}

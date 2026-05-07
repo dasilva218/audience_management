@@ -24,7 +24,7 @@ export default function MinistryContextProvider({ children }: { children: React.
 
     useEffect(() => {
         fetchMinistries()
-    }, [])
+    }, [ministries])
 
     return (
         <ministryContext.Provider value={{ ministries, setMinistries }}>

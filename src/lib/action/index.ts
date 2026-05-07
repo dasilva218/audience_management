@@ -395,7 +395,6 @@ export const getDashboardStats = async (ministryId: string) => {
       pending: res.filter((item) => item.status === "PENDING").length,
       rejected: res.filter((item) => item.status === "REJECTED").length,
       scheduled: res.filter((item) => item.status === "SCHEDULED").length,
-      processing: res.filter((item) => item.status === "PROCESSING").length,
       completed: res.filter((item) => item.status === "COMPLETED").length,
     }
 

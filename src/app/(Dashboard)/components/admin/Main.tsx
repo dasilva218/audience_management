@@ -1,7 +1,7 @@
 'use client'
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { StatCardProps, StatsType } from "@/lib/types/index_type";
-import { BarChart3, CheckCircle, Clock, Eye, FileCheck, FileText } from "lucide-react";
+import { BarChart3, CheckCircle, ChevronLeftCircle, Clock, Eye, FileCheck, FileText, Loader2, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AudienceRequest, RequestStatus } from "@/generated/prisma/client";
@@ -9,6 +9,8 @@ import { getDashboardStats } from "@/lib/action";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { toast } from "sonner";
 
 const statusStyles: Record<RequestStatus, string> = {
   PENDING: "bg-amber-100 text-amber-800 border-amber-200",
@@ -22,7 +24,6 @@ export const STATUS_LABELS: Record<string, string> = {
   PENDING: "En attente",
   REJECTED: "Rejetee",
   SCHEDULED: "Acceptee",
-  PROCESSING: "En traitement",
   COMPLETED: "Terminee",
 }
 
@@ -33,6 +34,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
   const [filterStatus, setFilterStatus] = useState<string>("ALL")
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+
   const StatsData = [
     {
       label: "Total",
@@ -64,10 +66,17 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
     }
   ]
 
-  const filteredRequests =
-    filterStatus === "ALL"
-      ? audienceRequests
-      : audienceRequests?.filter((r) => r.status === filterStatus)
+  const filter = filterStatus === "ALL" ? audienceRequests : audienceRequests?.filter((r) => r.status === filterStatus as RequestStatus)
+
+  const filteredRequests: AudienceRequest[] = filter ?? []
+
+  const totalPages = Math.max(1, Math.ceil(filteredRequests.length / pageSize))
+  const safePage = Math.min(currentPage, totalPages)
+  const startIdx = (safePage - 1) * pageSize
+  const paginatedRequests = filteredRequests.slice(startIdx, startIdx + pageSize)
+
+
+
 
   const getData = useCallback(async () => {
     const stats = await getDashboardStats(ministryId)
@@ -84,15 +93,15 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
     <main className="mx-auto max-w-7xl px-4 py-6">
       {
         selectedRequest ? (
-          "Hello World"
-          // <RequestDetail
-          //   request={selectedRequest}
-          //   onBack={() => {
-          //     setSelectedRequest(null)
-          //     refreshData()
-          //   }}
-          //   onStatusChange={() => refreshData()}
-          // />
+
+          <RequestDetail
+            request={selectedRequest}
+            onBack={() => {
+              setSelectedRequest(null)
+              // refreshData()
+            }}
+          // onStatusChange={() => refreshData()}
+          />
         ) : (
           <Tabs defaultValue="overview">
             <TabsList className="w-fit">
@@ -109,6 +118,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
             {/* Les states */}
             <TabsContent value="overview">
               <div className="flex flex-col gap-6">
+                {/* affichage des stats */}
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                   {StatsData.map((stat, index) => (
                     <StatCard
@@ -122,7 +132,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
                   }
                 </div>
 
-                {/* Recent requests */}
+                {/* affichage des demandes recentes */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg text-foreground">Demandes recentes</CardTitle>
@@ -153,7 +163,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
                       </CardDescription>
                     </div>
                     <div className="flex flex-col gap-2 sm:flex-row">
-                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                      <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value)}>
                         <SelectTrigger className="w-full sm:w-48">
                           <SelectValue placeholder="Filtrer par statut" />
                         </SelectTrigger>
@@ -184,10 +194,10 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                   <RequestTable
-                    requests={filteredRequests}
+                    requests={paginatedRequests}
                     onView={setSelectedRequest}
                   />
-                  {/* {filteredRequests?.length > 0 && (
+                  {filteredRequests?.length > 0 && (
                     <TablePagination
                       currentPage={safePage}
                       totalPages={totalPages}
@@ -196,7 +206,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
                       pageSize={pageSize}
                       total={filteredRequests.length}
                     />
-                  )} */}
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -208,6 +218,7 @@ export default function Main({ ministryId, audienceRequests }: { ministryId: str
   );
 
 }
+
 
 function StatCard({
   label,
@@ -292,6 +303,7 @@ function RequestTable({
     </Table>
   )
 }
+
 
 function TablePagination({
   currentPage,
@@ -384,16 +396,14 @@ function TablePagination({
   )
 }
 
-
-
 function RequestDetail({
   request,
   onBack,
-  onStatusChange,
+  // onStatusChange,
 }: {
   request: AudienceRequest
   onBack: () => void
-  onStatusChange: () => void
+  // onStatusChange: () => void
 }) {
   const [isPending, startTransition] = useTransition()
   const [currentStatus, setCurrentStatus] = useState(request.status)
@@ -403,7 +413,7 @@ function RequestDetail({
       const result = await changeRequestStatus(request.id, newStatus)
       if (result.success) {
         setCurrentStatus(newStatus)
-        onStatusChange()
+        // onStatusChange()
         toast.success(`Statut mis a jour: ${STATUS_LABELS[newStatus]}`)
       } else {
         toast.error(result.error)
@@ -414,7 +424,7 @@ function RequestDetail({
   return (
     <div className="flex flex-col gap-6">
       <Button variant="ghost" onClick={onBack} className="w-fit text-muted-foreground">
-        <ChevronLeft className="mr-1 h-4 w-4" />
+        <ChevronLeftCircle className="mr-1 h-4 w-4" />
         Retour a la liste
       </Button>
 
@@ -453,7 +463,7 @@ function RequestDetail({
             <div className="border-t pt-4">
               <p className="text-sm font-medium text-foreground mb-2">Description</p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {request.description}
+                {request.message}
               </p>
             </div>
 
@@ -552,7 +562,6 @@ function RequestDetail({
   )
 }
 
-
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -561,7 +570,6 @@ function DetailField({ label, value }: { label: string; value: string }) {
     </div>
   )
 }
-
 
 function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
   if (total <= 7) {
@@ -588,3 +596,5 @@ function getPageNumbers(current: number, total: number): (number | "ellipsis")[]
   pages.push(total)
   return pages
 }
+
+

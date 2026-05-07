@@ -19,6 +19,7 @@ export default function AdminPage() {
   const user = session?.user
 
   const refreshData = useCallback(async () => {
+
     const [ministry, audienceRequest] = await Promise.all([
       await getMinistryById(user?.ministryId ?? ""),
       await getAudienceRequests(user?.ministryId ?? ""),
@@ -26,7 +27,7 @@ export default function AdminPage() {
 
     setMinistry(ministry)
     setAudienceRequests(audienceRequest)
-  }, [user?.ministryId])
+  }, [user])
 
   useEffect(() => {
     refreshData()

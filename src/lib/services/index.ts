@@ -94,26 +94,21 @@ export const SeedUsers = async () => {
   console.log('\n🎉 Tous les utilisateurs ont été créés avec succès.');
 }
 
-export const GenerateTrackingCode = (): string => {
-  const year = new Date().getFullYear()
-  const num = String(Math.floor(Math.random() * 999999)).padStart(6, "0")
-  return `AUD-${year}-${num}`
-}
-
 export const SeedAudienceRequests = async () => {
-  const MINISTRY_ID = 'cmoj6wkj90000hdcpdtgs8hni';
+  const MINISTRY_ID = 'cmovgv1hm00009xcpxkf9sfjk';
 
   const audienceRequests = [
     {
       trackingCode: 'AUD-2024-0001',
       fullName: 'Aminata Diallo',
+      nationalId: '1 84 06 221 045 12',
       email: 'aminata.diallo@gmail.com',
       phone: '+221 77 123 45 67',
       subject: 'Demande de subvention pour startup EdTech',
       message: 'Notre startup développe une plateforme d\'apprentissage en ligne adaptée aux réalités locales. Nous sollicitons une audience pour présenter notre projet et explorer les dispositifs de soutien disponibles.',
       identityDocUrl: 'https://storage.example.com/ids/aminata-diallo-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0001-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Dossier complet. Audience accordée avec le directeur de cabinet.',
       scheduledAt: new Date('2024-03-15T09:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -121,6 +116,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0002',
       fullName: 'Moussa Konaté',
+      nationalId: '1 79 11 223 018 34',
       email: 'moussa.konate@outlook.com',
       phone: '+221 76 234 56 78',
       subject: 'Recours suite à suspension de licence d\'opérateur télécom',
@@ -135,6 +131,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0003',
       fullName: 'Fatoumata Traoré',
+      nationalId: '2 91 03 224 007 56',
       email: 'f.traore@yahoo.fr',
       phone: '+221 78 345 67 89',
       subject: 'Partenariat pour déploiement de points d\'accès Internet ruraux',
@@ -149,13 +146,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0004',
       fullName: 'Ibrahima Sow',
+      nationalId: '1 88 07 221 033 78',
       email: 'ibrahima.sow@techsn.com',
       phone: '+221 77 456 78 90',
       subject: 'Proposition de partenariat PPP pour digitalisation des services publics',
       message: 'Notre entreprise tech souhaite proposer une solution de digitalisation des actes d\'état civil. Nous sollicitons une audience pour présenter notre offre et discuter des modalités de partenariat.',
       identityDocUrl: 'https://storage.example.com/ids/ibrahima-sow-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0004-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Présentation très intéressante. Réunion technique avec la DSI programmée.',
       scheduledAt: new Date('2024-03-22T14:30:00Z'),
       ministryId: MINISTRY_ID,
@@ -163,6 +161,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0005',
       fullName: 'Mariam Coulibaly',
+      nationalId: '2 95 02 221 061 23',
       email: 'mariam.coulibaly@gmail.com',
       phone: '+221 70 567 89 01',
       subject: 'Accréditation d\'un centre de formation aux métiers du numérique',
@@ -177,13 +176,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0006',
       fullName: 'Ousmane Bah',
+      nationalId: '1 82 09 221 014 90',
       email: 'ousmane.bah@hotmail.com',
       phone: '+221 76 678 90 12',
       subject: 'Signalement d\'une fraude à grande échelle sur mobile money',
       message: 'J\'ai été victime d\'une escroquerie en ligne via une plateforme mobile money non régulée. Plusieurs centaines de personnes semblent touchées. Je demande une audience urgente pour signaler ce réseau frauduleux.',
       identityDocUrl: 'https://storage.example.com/ids/ousmane-bah-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0006-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Cas urgent. Transmettre immédiatement à l\'ARTP et à la cellule cybersécurité.',
       scheduledAt: new Date('2024-04-02T10:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -191,6 +191,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0007',
       fullName: 'Kadiatou Camara',
+      nationalId: '2 93 05 221 029 45',
       email: 'kadiatou.camara@gmail.com',
       phone: '+221 78 789 01 23',
       subject: 'Demande de révision des tarifs d\'accès à Internet pour les PME',
@@ -205,6 +206,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0008',
       fullName: 'Sékou Touré',
+      nationalId: '1 86 12 221 052 67',
       email: 'sekou.toure@devagency.sn',
       phone: '+221 77 890 12 34',
       subject: 'Inclusion dans le registre national des entreprises du numérique',
@@ -219,13 +221,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0009',
       fullName: 'Aïssatou Barry',
+      nationalId: '2 90 01 221 038 11',
       email: 'aissatou.barry@gmail.com',
       phone: '+221 70 901 23 45',
       subject: 'Protection des données personnelles — plainte contre opérateur',
       message: 'Un opérateur télécom a divulgué mes données personnelles à des tiers sans mon consentement. Je sollicite une audience pour signaler cette violation et connaître les recours disponibles.',
       identityDocUrl: 'https://storage.example.com/ids/aissatou-barry-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0009-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Cas relevant de la CDP. Audience accordée pour orientation.',
       scheduledAt: new Date('2024-04-10T11:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -233,6 +236,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0010',
       fullName: 'Cheikh Diop',
+      nationalId: '1 83 08 221 071 89',
       email: 'cheikh.diop@incubateur.sn',
       phone: '+221 76 012 34 56',
       subject: 'Labellisation d\'un incubateur de startups technologiques',
@@ -247,13 +251,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0011',
       fullName: 'Ndeye Fatou Mbaye',
+      nationalId: '2 97 04 221 009 34',
       email: 'ndeye.mbaye@gmail.com',
       phone: '+221 77 123 98 76',
       subject: 'Bourse de formation en cybersécurité à l\'étranger',
       message: 'Ingénieure informatique diplômée avec mention, je souhaite me spécialiser en cybersécurité dans une université partenaire. Je sollicite une bourse dans le cadre du programme de formation aux métiers du numérique.',
       identityDocUrl: 'https://storage.example.com/ids/ndeye-mbaye-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0011-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Profil excellent. Transmettre au programme de bourses numériques.',
       scheduledAt: new Date('2024-04-18T09:30:00Z'),
       ministryId: MINISTRY_ID,
@@ -261,6 +266,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0012',
       fullName: 'Alioune Badara Diagne',
+      nationalId: '1 80 10 221 044 56',
       email: 'alioune.diagne@gmail.com',
       phone: '+221 78 234 56 78',
       subject: 'Demande d\'agrément pour solution de paiement en ligne',
@@ -275,6 +281,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0013',
       fullName: 'Rokhaya Sarr',
+      nationalId: '2 89 06 221 026 78',
       email: 'rokhaya.sarr@gmail.com',
       phone: '+221 70 345 67 89',
       subject: 'Plainte pour concurrence déloyale — marché des solutions cloud',
@@ -289,13 +296,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0014',
       fullName: 'Mamadou Lamine Fall',
+      nationalId: '1 85 03 221 058 90',
       email: 'ml.fall@hotmail.fr',
       phone: '+221 76 456 78 90',
       subject: 'Proposition de plateforme nationale de télémédecine',
       message: 'Notre équipe pluridisciplinaire a développé une plateforme de télémédecine connectant médecins et patients en zones rurales. Nous cherchons un portage institutionnel du Ministère du Numérique.',
       identityDocUrl: 'https://storage.example.com/ids/mamadou-fall-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0014-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Projet stratégique. Réunion interministérielle à organiser.',
       scheduledAt: new Date('2024-05-06T10:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -303,13 +311,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0015',
       fullName: 'Aminata Balde',
+      nationalId: '2 92 11 221 017 12',
       email: 'aminata.balde@ong-digital.org',
       phone: '+221 78 567 89 01',
       subject: 'Programme d\'alphabétisation numérique pour femmes rurales',
       message: 'Notre ONG forme des femmes en milieu rural à l\'usage du smartphone et des services numériques de base. Nous souhaitons formaliser un partenariat avec le Ministère pour étendre le programme à 10 nouvelles régions.',
       identityDocUrl: 'https://storage.example.com/ids/aminata-balde-cni.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0015-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Initiative alignée avec la stratégie d\'inclusion numérique. À intégrer au plan national.',
       scheduledAt: new Date('2024-05-14T14:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -317,6 +326,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0016',
       fullName: 'Boubacar Keïta',
+      nationalId: '1 77 07 221 063 34',
       email: 'b.keita@gmail.com',
       phone: '+221 77 678 90 12',
       subject: 'Régularisation d\'un réseau de cybercafés communautaires',
@@ -331,13 +341,14 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0017',
       fullName: 'Hawa Diakité',
+      nationalId: '2 96 01 221 035 56',
       email: 'hawa.diakite@yahoo.com',
       phone: '+221 76 789 01 23',
       subject: 'Intégration de l\'IA dans les programmes scolaires nationaux',
       message: 'En tant qu\'enseignante et chercheuse, je propose un curriculum d\'initiation à l\'intelligence artificielle pour le secondaire. Je souhaite présenter ce projet au Ministère pour une expérimentation nationale.',
       identityDocUrl: 'https://storage.example.com/ids/hawa-diakite-passport.pdf',
       requestLetterUrl: 'https://storage.example.com/letters/AUD-2024-0017-lettre.pdf',
-      status: RequestStatus.COMPLETED,
+      status: RequestStatus.SCHEDULED,
       adminNote: 'Projet innovant. Audience accordée avec le conseiller technique.',
       scheduledAt: new Date('2024-05-20T09:00:00Z'),
       ministryId: MINISTRY_ID,
@@ -345,6 +356,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0018',
       fullName: 'Lamine Cissé',
+      nationalId: '1 81 09 221 049 78',
       email: 'lamine.cisse@gmail.com',
       phone: '+221 70 890 12 34',
       subject: 'Demande d\'extension de la couverture 4G en zones périurbaines',
@@ -359,6 +371,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0019',
       fullName: 'Oumou Kouyaté',
+      nationalId: '2 94 04 221 022 90',
       email: 'oumou.kouyate@gmail.com',
       phone: '+221 77 901 23 45',
       subject: 'Demande de soutien pour hackathon national de jeunes développeurs',
@@ -373,6 +386,7 @@ export const SeedAudienceRequests = async () => {
     {
       trackingCode: 'AUD-2024-0020',
       fullName: 'Thierno Amadou Ba',
+      nationalId: '1 87 02 221 067 12',
       email: 'thierno.ba@mediatech.sn',
       phone: '+221 76 012 34 56',
       subject: 'Accréditation d\'un média spécialisé dans l\'actualité tech',
@@ -394,4 +408,12 @@ export const SeedAudienceRequests = async () => {
 
   console.log(`✓ ${audienceRequests.length} AudienceRequests créées avec succès.`);
 }
+
+export const GenerateTrackingCode = (): string => {
+  const year = new Date().getFullYear()
+  const num = String(Math.floor(Math.random() * 999999)).padStart(6, "0")
+  return `AUD-${year}-${num}`
+}
+
+
 

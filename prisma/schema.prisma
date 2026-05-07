@@ -17,7 +17,6 @@ datasource db {
 
 enum RequestStatus {
   PENDING // En attente de traitement
-  PROCESSING // En cours d'examen
   SCHEDULED // Audience programmée
   REJECTED // Demande refusée
   COMPLETED // Audience effectuée
@@ -48,11 +47,12 @@ model AudienceRequest {
   trackingCode String @unique // Code généré type "AUD-2024-XXXX"
 
   // Informations du Demandeur (Public)
-  fullName String
-  email    String
-  phone    String
-  subject  String  @db.Text
-  message  String? @db.Text
+  fullName   String
+  email      String
+  phone      String
+  subject    String  @db.Text
+  message    String? @db.Text
+  nationalId String
 
   // Documents (Stockage des URLs/Chemins)
   identityDocUrl   String // URL du PDF/Image de la pièce d'identité

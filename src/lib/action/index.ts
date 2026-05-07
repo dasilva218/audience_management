@@ -206,6 +206,7 @@ export const submitAudienceRequest = async (formData: FormData) => {
     const newAudienceRequest = {
       trackingCode: GenerateTrackingCode(),
       fullName: `${result.data.firstName} ${result.data.lastName}`,
+      nationalId: result.data.nationalId,
       email: result.data.email,
       phone: result.data.phone,
       subject: result.data.subject,

@@ -31,6 +31,5 @@ export type StatsType = {
   pending: number
   rejected: number
   scheduled: number
-  processing: number
   completed: number
 }

@@ -3,16 +3,15 @@ import { SignOut } from "@/lib/action";
 import { AuthUser } from "@/lib/betterAuth/auth";
 import { MinistryType } from "@/lib/types/index_type";
 import { LogOut } from "lucide-react";
+import { useDashboardContext } from "@/context/dashboardProvider";
 // import { Button } from "../ui/button";
 
 
-export default function Header({
-  ministry,
-  user,
-}: {
-  ministry: MinistryType | null;
-  user: AuthUser | null;
-}) {
+export default function Header() {
+
+  const { ministry, user } = useDashboardContext()
+
+
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur">
       <div className="bg-primary text-primary-foreground">

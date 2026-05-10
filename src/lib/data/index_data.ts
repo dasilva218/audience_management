@@ -1,5 +1,7 @@
 
+import { BarChart3Icon, FileTextIcon } from "lucide-react";
 import { MinistryType, NavLink } from "../types/index_type";
+import { RequestStatus } from "@/generated/prisma/enums";
 
 
 enum UserRole {
@@ -21,6 +23,19 @@ export const MINISTRIES: Omit<MinistryType, 'id_ministry'>[] = [
 
 ]
 
+export const STATUS_LABELS: Record<string, string> = {
+  PENDING: "En attente",
+  REJECTED: "Rejetee",
+  SCHEDULED: "Acceptee",
+  COMPLETED: "Terminee",
+}
+
+export const statusStyles: Record<RequestStatus, string> = {
+  PENDING: "bg-amber-100 text-amber-800 border-amber-200",
+  REJECTED: "bg-red-100 text-red-800 border-red-200",
+  SCHEDULED: "bg-blue-100 text-blue-800 border-blue-200",
+  COMPLETED: "bg-green-100 text-green-800 border-green-200",
+}
 
 export const usersData = [
   // Ministère de l'Économie Numérique
@@ -78,3 +93,22 @@ export const usersData = [
     ],
   },
 ];
+
+export enum NavTab {
+  OVERVIEW = "overview",
+  REQUESTS = "requests",
+}
+
+export const TabsNav = [
+  { value: NavTab.OVERVIEW, label: "Vue d'ensemble", icon: BarChart3Icon },
+  { value: NavTab.REQUESTS, label: "Demandes", icon: FileTextIcon },
+]
+
+
+export const FilterStatus = [
+  { value: "ALL", label: "Tous" },
+  { value: "PENDING", label: "En attente" },
+  { value: "SCHEDULED", label: "Acceptees" },
+  { value: "REJECTED", label: "Rejetees" },
+  { value: "COMPLETED", label: "Terminees" },
+]

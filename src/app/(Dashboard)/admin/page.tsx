@@ -4,34 +4,12 @@ import { useSession } from "@/lib/betterAuth/auth-client"
 import { Loader2Icon } from "lucide-react"
 import Header from "../components/admin/Header"
 import Main from "../components/admin/Main"
-import { useCallback, useEffect, useState } from "react"
-import { MinistryType } from "@/lib/types/index_type"
-import { getAudienceRequests, getMinistryById } from "@/lib/action"
-import { AudienceRequest } from "@/generated/prisma/client"
+import MainPage from "../components/MainPage"
+
 
 export default function AdminPage() {
 
-  const [ministry, setMinistry] = useState<MinistryType | null>(null)
-  const [audienceRequests, setAudienceRequests] = useState<AudienceRequest[] | null>(null)
-
   const { isPending, data: session } = useSession()
-
-  const user = session?.user
-
-  const refreshData = useCallback(async () => {
-
-    const [ministry, audienceRequest] = await Promise.all([
-      await getMinistryById(user?.ministryId ?? ""),
-      await getAudienceRequests(user?.ministryId ?? ""),
-    ])
-
-    setMinistry(ministry)
-    setAudienceRequests(audienceRequest)
-  }, [user])
-
-  useEffect(() => {
-    refreshData()
-  }, [refreshData])
 
   if (isPending) {
     return (
@@ -42,14 +20,13 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-
+    <>
       {/* Admin Header */}
-      <Header ministry={ministry} user={user ?? null} />
+      <Header />
       {/* Admin main */}
-      <Main ministryId={user?.ministryId ?? ""} audienceRequests={audienceRequests} />
-
-    </div>
+      <MainPage />
+      {/* <Main /> */}
+    </>
   )
 
 

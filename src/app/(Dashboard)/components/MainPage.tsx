@@ -14,7 +14,7 @@ import AudienceDetail from "./admin/AudienceDetail";
 
 export default function MainPage() {
 
-    const { stats, StatsData, audienceRequests } = useDashboardContext()
+    const { stats, statsData, audienceRequests } = useDashboardContext()
 
     const [selectedAudienceId, setSelectedAudienceId] = useState<AudienceRequest | null>(null)
     const [filterStatus, setFilterStatus] = useState("ALL")
@@ -54,7 +54,7 @@ export default function MainPage() {
                                 {/* affichage des stats */}
                                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                                     {
-                                        StatsData.map(({ label, value, icon, color, bg }, index) => (
+                                        statsData.map(({ label, value, icon, color, bg }, index) => (
                                             <StatCard
                                                 key={index}
                                                 label={label}

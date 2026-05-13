@@ -4,94 +4,142 @@ import { getAudienceRequests, getDashboardStats, getMinistryById } from "@/lib/a
 import { AuthUser } from "@/lib/betterAuth/auth";
 import { useSession } from "@/lib/betterAuth/auth-client";
 import { MinistryType, StatCardProps, StatsType } from "@/lib/types/index_type";
-import { FileText } from "lucide-react";
-import { createContext, useContext, useEffect, useState } from "react";
+import { Calendar, CheckCircle, Clock, FileText } from "lucide-react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-const contextType = {
-    audienceRequests: [] as AudienceRequest[],
-    setAudienceRequests: (requests: AudienceRequest[]) => { },
-    ministry: {} as MinistryType | null,
-    setMinistry: (ministry: MinistryType) => { },
-    user: {} as AuthUser | null,
-    stats: {} as StatsType | null,
-    setStats: (stats: StatsType) => { },
-    StatsData: {} as StatCardProps[],
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface DashboardContextType {
+    audienceRequests: AudienceRequest[];
+    setAudienceRequests: (requests: AudienceRequest[]) => void;
+    ministry: MinistryType | null;
+    setMinistry: (ministry: MinistryType) => void;
+    user: AuthUser | null;
+    stats: StatsType | null;
+    setStats: (stats: StatsType) => void;
+    statsData: StatCardProps[];
+    isLoading: boolean;
+    error: string | null;
+    refetch: () => Promise<void>;
 }
 
-const dashboardContext = createContext<typeof contextType>(contextType)
+// ─── Valeur par défaut du contexte ───────────────────────────────────────────
 
-export const useDashboardContext = () => useContext<typeof contextType>(dashboardContext)
+const defaultContext: DashboardContextType = {
+    audienceRequests: [],
+    setAudienceRequests: () => { },
+    ministry: null,
+    setMinistry: () => { },
+    user: null,
+    stats: null,
+    setStats: () => { },
+    statsData: [],
+    isLoading: false,
+    error: null,
+    refetch: async () => { },
+};
 
+// ─── Contexte ─────────────────────────────────────────────────────────────────
+
+const DashboardContext = createContext<DashboardContextType>(defaultContext);
+
+export const useDashboardContext = () => useContext(DashboardContext);
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
 
 export default function DashboardProvider({ children }: { children: React.ReactNode }) {
+    const [ministry, setMinistry] = useState<MinistryType | null>(null);
+    const [stats, setStats] = useState<StatsType | null>(null);
+    const [audienceRequests, setAudienceRequests] = useState<AudienceRequest[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const [ministry, setMinistry] = useState<MinistryType | null>(null)
-    const [stats, setStats] = useState<StatsType | null>(null)
-    const [audienceRequests, setAudienceRequests] = useState<AudienceRequest[]>([])
-    const { isPending, data: session } = useSession()
+    const { data: session } = useSession();
+    const user = session?.user ?? null;
 
-    const user = session?.user
+    // ── Fetch ──────────────────────────────────────────────────────────────────
 
-    const StatsData = [
-        {
-            label: "Total",
-            value: stats?.total!,
-            icon: FileText,
-            color: "text-foreground",
-            bg: "bg-muted",
-        },
-        {
-            label: "En Attente",
-            value: stats?.pending ?? 0,
-            icon: FileText,
-            color: "text-foreground",
-            bg: "bg-muted",
-        },
-        {
-            label: "Programmees",
-            value: stats?.scheduled ?? 0,
-            icon: FileText,
-            color: "text-foreground",
-            bg: "bg-muted",
-        },
-        {
-            label: "Effectuees  ",
-            value: stats?.completed ?? 0,
-            icon: FileText,
-            color: "text-foreground",
-            bg: "bg-muted",
-        },
-        // {
-        //     label: "Rejetees",
-        //     value: stats?.rejected ?? 0,
-        //     icon: FileText,
-        //     color: "text-foreground",
-        //     bg: "bg-muted",
-        // }
-    ]
+    const fetchDataDashboard = useCallback(async () => {
+        const ministryId = user?.ministryId;
+        if (!ministryId) return;
 
+        setIsLoading(true);
+        setError(null);
 
-    const fetchDataDashboard = async () => {
-        const [ministry, audienceRequest, stats] = await Promise.all([
-            await getMinistryById(user?.ministryId ?? ""),
-            await getAudienceRequests(user?.ministryId ?? ""),
-            await getDashboardStats(user?.ministryId ?? "")
-        ])
+        try {
+            const [ministryData, audienceData, statsData] = await Promise.all([
+                getMinistryById(ministryId),
+                getAudienceRequests(ministryId),
+                getDashboardStats(ministryId),
+            ]);
 
-        setMinistry(ministry)
-        setAudienceRequests(audienceRequest)
-        if (stats) {
-            setStats(stats)
+            setMinistry(ministryData);
+            setAudienceRequests(audienceData);
+            if (statsData) setStats(statsData);
+        } catch (err) {
+            console.error("Erreur lors du chargement du dashboard :", err);
+            setError("Impossible de charger les données. Veuillez réessayer.");
+        } finally {
+            setIsLoading(false);
         }
-    }
+    }, [user?.ministryId]);
 
     useEffect(() => {
-        fetchDataDashboard()
-    }, [])
+        fetchDataDashboard();
+    }, [fetchDataDashboard]);
+
+    // ── Stats cards ────────────────────────────────────────────────────────────
+
+    const statsData: StatCardProps[] = [
+        {
+            label: "Total",
+            value: stats?.total ?? 0,
+            icon: FileText,
+            color: "text-foreground",
+            bg: "bg-muted",
+        },
+        {
+            label: "En attente",
+            value: stats?.pending ?? 0,
+            icon: Clock,
+            color: "text-foreground",
+            bg: "bg-muted",
+        },
+        {
+            label: "Programmées",
+            value: stats?.scheduled ?? 0,
+            icon: Calendar,
+            color: "text-foreground",
+            bg: "bg-muted",
+        },
+        {
+            label: "Effectuées",
+            value: stats?.completed ?? 0,
+            icon: CheckCircle,
+            color: "text-foreground",
+            bg: "bg-muted",
+        },
+    ];
+
+    // ── Rendu ──────────────────────────────────────────────────────────────────
 
     return (
-        <dashboardContext.Provider value={{ audienceRequests, setAudienceRequests, ministry, setMinistry, user: user ?? null, stats, setStats, StatsData }}>
+        <DashboardContext.Provider
+            value={{
+                audienceRequests,
+                setAudienceRequests,
+                ministry,
+                setMinistry,
+                user,
+                stats,
+                setStats,
+                statsData,
+                isLoading,
+                error,
+                refetch: fetchDataDashboard,
+            }}
+        >
             {children}
-        </dashboardContext.Provider>
+        </DashboardContext.Provider>
     );
 }

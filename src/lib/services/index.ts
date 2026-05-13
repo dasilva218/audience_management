@@ -2,6 +2,8 @@ import { RequestStatus } from "@/generated/prisma/enums";
 import { auth } from "../betterAuth/auth";
 import { MINISTRIES, usersData } from "../data/index_data";
 import prisma from "../prisma";
+// import { format } from "date-fns"
+// import { fr } from "date-fns/locale"
 
 export const hashedPassword = async (password: string) => {
   const context = await auth.$context;
@@ -415,5 +417,13 @@ export const GenerateTrackingCode = (): string => {
   return `AUD-${year}-${num}`
 }
 
-
-
+// export function formatAudienceDate(iso: string): string {
+//   return new Date(iso).toLocaleDateString("fr-FR", {
+//     weekday: "long",
+//     day: "numeric",
+//     month: "long",
+//     year: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   })
+// }
